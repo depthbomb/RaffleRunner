@@ -1,0 +1,6 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish (win-x86)" type="DotNetFolderPublish" factoryName="Publish to folder" singleton="false">
+    <riderPublish configuration="Release" delete_existing_files="true" platform="Any CPU" produce_single_file="true" ready_to_run="true" runtime="win-x86" self_contained="true" target_folder="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-x86" target_framework="net7.0" trim_unused_assemblies="true" uuid_high="-7808842366582438140" uuid_low="-4668585918144221630" />
+    <method v="2" />
+  </configuration>
+</component>

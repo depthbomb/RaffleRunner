@@ -1,0 +1,8 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish (linux-arm)" type="DotNetFolderPublish" factoryName="Publish to folder" singleton="false">
+    <riderPublish configuration="Release" delete_existing_files="true" platform="Any CPU" produce_single_file="true" ready_to_run="true" runtime="linux-arm" self_contained="true" target_folder="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm" target_framework="net7.0" trim_unused_assemblies="true" uuid_high="-7808842366582438140" uuid_low="-4668585918144221630" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Publish (linux-musl-x64)" run_configuration_type="DotNetFolderPublish" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="LocationsWithSilentDeleteHolder">
+    <option name="locations">
+      <list>
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-x86" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-x64" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-arm" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-arm64" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-x64" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-musl-x64" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm64" />
+      </list>
+    </option>
+  </component>
+</project>
