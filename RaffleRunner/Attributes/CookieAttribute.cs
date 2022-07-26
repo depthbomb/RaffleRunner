@@ -16,7 +16,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/26/2022 @ 00:01
+// Last edited on 07/26/2022 @ 00:54
 #endregion
 
 using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
@@ -26,7 +26,7 @@ namespace RaffleRunner.Attributes;
 [PublicAPI]
 public class CookieAttribute : ValidationAttribute
 {
-    protected override ValidationResult? IsValid(object? value, ValidationContext ctx)
+    protected override ValidationResult IsValid(object value, ValidationContext ctx)
     {
         if (value is not string cookie)
         {

@@ -16,12 +16,13 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/25/2022 @ 19:11
+// Last edited on 07/26/2022 @ 01:17
 #endregion
 
 using RaffleRunner.Attributes;
 using AngleSharp.Html.Parser;
 using System.Text.RegularExpressions;
+using Serilog.Core;
 
 namespace RaffleRunner;
 
@@ -55,6 +56,7 @@ public class AuthenticatedCommand : RootCommand
     public HtmlParser HtmlParser => _htmlParser;
     
     private          HttpClient _httpClient;
+    private readonly ILogger    _logger           = Log.ForContext<AuthenticatedCommand>();
     private readonly string     _userAgent        = GlobalShared.MimicUserAgent;
     private readonly HtmlParser _htmlParser       = new();
     private readonly Regex      _csrfTokenPattern = new(@"value=""([a-f\d]{64})""");
@@ -70,7 +72,7 @@ public class AuthenticatedCommand : RootCommand
 
     protected async Task<string> GetStringAsync(string path = "/")
     {
-        Logger.Debug("Sending GET request to {0}", path);
+        _logger.Debug("Sending GET request to {Path}", path);
         
         var res = await _httpClient.GetAsync(path);
         if (res.StatusCode == HttpStatusCode.OK)
@@ -94,18 +96,18 @@ public class AuthenticatedCommand : RootCommand
 
         _httpClient = client;
         
-        Logger.Debug("Created HTTP client");
+        _logger.Debug("Created HTTP client");
     }
 
     private async Task GetCsrfTokenAsync()
     {
-        Logger.Debug("Retrieving CSRF token");
+        _logger.Debug("Retrieving CSRF token");
         
         string html  = await GetStringAsync();
         var    match = _csrfTokenPattern.Match(html);
         if (match.Success)
         {
-            Logger.Debug("Retrieved CSRF token");
+            _logger.Debug("Retrieved CSRF token");
             CsrfToken = match.Groups[1].Value;
         }
         else

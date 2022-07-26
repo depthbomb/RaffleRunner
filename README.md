@@ -46,7 +46,7 @@ RaffleRunner has builds for Windows (x86, x64, arm, arm64) as well as builds Lin
   - `-o | --open` - Open the won raffles page in your system's default browser
 - `$ rafrun join-raffles [options]`
   - `-c | --cookie <value>` - Your Scrap.TF scr_session cookie value
-  - `-r | --repeat` - How many times to re-scan and join available raffles, omit to run indefinitely
+  - `-r | --repeat <number>` - How many times to re-scan and join available raffles, omit to run indefinitely
   - `-e | --ending` - Whether to sort raffles by time remaining, by default they are sorted by when they were created
   - `-i | --increment-scan-delay <number>` - Whether to increment the scan delay by 1 second if a scan resulted in no available raffles
   - `-p | --paranoid` - Enable paranoid mode
@@ -56,9 +56,9 @@ All commands also support a `-d | --debug` option which enables debug logging.
 
 ## Beta Disclaimer
 
-This software is currently a work-in-progress and is missing features such as:
+This project is currently a work-in-progress and is missing features such as:
 
 - Honeypot/trap detection
 - Logging to a file
 
-These are features that will be included in the full release of RaffleRunner.
+These are features that will be included before or at the full release of RaffleRunner.

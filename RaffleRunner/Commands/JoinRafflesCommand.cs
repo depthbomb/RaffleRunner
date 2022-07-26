@@ -16,7 +16,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/25/2022 @ 23:37
+// Last edited on 07/26/2022 @ 01:27
 #endregion
 
 using System.Text.Json;
@@ -51,6 +51,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
     private const string RafflesPaginateEndpoint = "/ajax/raffles/Paginate";
     private const string RafflePanelSelector     = ".panel-raffle:not(.raffle-entered)";
     
+    private readonly ILogger      _logger        = Log.ForContext<JoinRafflesCommand>();
     private readonly List<string> _queue         = new();
     private readonly List<string> _joinedRaffles = new();
     private readonly Regex        _entryPattern  = new(@"ScrapTF\.Raffles\.RedirectToRaffle\('(?<RaffleId>[A-Z0-9]{6,})'\)", RegexOptions.Compiled);
@@ -59,18 +60,18 @@ public class JoinRafflesCommand : AuthenticatedCommand
 
     public override async Task ExecuteAsync()
     {
-        Logger.Debug("Starting loop with {0} iterations", RepeatAmount);
+        _logger.Debug("Starting loop with {Iteractions} iterations", RepeatAmount);
         
         bool repeatForever = RepeatAmount < 1;
         for (int i = 0; repeatForever || i < RepeatAmount; i++)
         {
-            Logger.Info("Scanning raffles");
+            _logger.Information("Scanning raffles");
             
             await ScanRafflesAsync();
             
             if (_queue.Count > 0)
             {
-                Logger.Info("Joining {0} {1}", _queue.Count, _queue.Count != 1 ? "raffles" : "raffle");
+                _logger.Information("Joining {Count} {Pluralization}", _queue.Count, _queue.Count != 1 ? "raffles" : "raffle");
                 
                 await JoinRafflesAsync();
             }
@@ -78,11 +79,11 @@ public class JoinRafflesCommand : AuthenticatedCommand
             {
                 if (!repeatForever && i == RepeatAmount)
                 {
-                    Logger.Debug("Arrived at end of loop, breaking");
+                    _logger.Debug("Arrived at end of loop, breaking");
                     break;
                 }
                 
-                Logger.Debug("All raffles have been entered, scanning again after {0} seconds", _scanDelay / 1000);
+                _logger.Debug("All raffles have been entered, scanning again after {Delay} seconds", _scanDelay / 1000);
                 
                 await Task.Delay(_scanDelay);
 
@@ -93,23 +94,23 @@ public class JoinRafflesCommand : AuthenticatedCommand
             }
         }
         
-        Logger.Debug("Loop ended");
+        _logger.Debug("Loop ended");
     }
 
     private async Task ScanRafflesAsync()
     {
         _queue.Clear();
         
-        bool    doneScanning = false;
-        string  html         = await GetStringAsync(RafflesIndexUrl);
-        string? lastId       = string.Empty;
+        bool   doneScanning = false;
+        string html         = await GetStringAsync(RafflesIndexUrl);
+        string lastId       = string.Empty;
 
         while (!doneScanning)
         {
-            string? json =  await PaginateAsync(lastId);
+            string json =  await PaginateAsync(lastId);
             if (json == null)
             {
-                Logger.Error("Pagination didn't return a valid JSON response, trying again in 10 seconds.");
+                _logger.Error("Pagination didn't return a valid JSON response, trying again in 10 seconds");
                 await Task.Delay(10_000);
                 continue;
             }
@@ -151,43 +152,41 @@ public class JoinRafflesCommand : AuthenticatedCommand
                     {
                         if (paginateResponse.Message.Contains("active site ban"))
                         {
-                            Logger.Fatal("Account is banned");
+                            _logger.Fatal("Account is banned");
                         }
                                 
-                        Logger.Error("Encountered an error while paginating: {Message} - Waiting 10 seconds", paginateResponse.Message);
+                        _logger.Error("Encountered an error while paginating: {Message} - Waiting 10 seconds", paginateResponse.Message);
 
                         await Task.Delay(10_000);
                     }
                     else
                     {
-                        Logger.Error("Paginate response for apex {Apex} was unsuccessful", string.IsNullOrEmpty(lastId) ? "<empty>" : lastId);
+                        _logger.Error("Paginate response for apex {Apex} was unsuccessful", string.IsNullOrEmpty(lastId) ? "<empty>" : lastId);
                     }
                 }
             }
             catch (JsonException ex)
             {
-                Logger.Error("Failed to read pagination data");
+                _logger.Error(ex, "Failed to read pagination data");
             }
         }
     }
 
-    private async Task<string?> PaginateAsync(string? apex = null)
+    private async Task<string> PaginateAsync(string apex = null)
     {
         string sort = SortByTimeLeft ? "0" : "1"; // They should really use integers for this
         var postData = new FormUrlEncodedContent(new[]
         {
-            new KeyValuePair<string, string?>("start", apex),
-            new KeyValuePair<string, string?>("sort", sort),
-            new KeyValuePair<string, string?>("puzzle", "0"),
-            new KeyValuePair<string, string?>("csrf", CsrfToken)
+            new KeyValuePair<string, string>("start", apex),
+            new KeyValuePair<string, string>("sort", sort),
+            new KeyValuePair<string, string>("puzzle", "0"),
+            new KeyValuePair<string, string>("csrf", CsrfToken)
         });
 
         var response = await HttpClient.PostAsync(RafflesPaginateEndpoint, postData);
         if (response.StatusCode == HttpStatusCode.OK)
         {
-            string? html = await response.Content.ReadAsStringAsync();
-
-            return html;
+            return await response.Content.ReadAsStringAsync();
         }
 
         return null;
@@ -200,7 +199,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
         var queue  = _queue.Where(r => !_joinedRaffles.Contains(r));
         foreach (string raffle in queue)
         {
-            Logger.Debug("Joining raffle {0}", raffle);
+            _logger.Debug("Joining raffle {Id}", raffle);
             
             string html        = await GetStringAsync($"/raffles/{raffle}");
             var    hashMatch   = _hashPattern.Match(html);
@@ -211,7 +210,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
 
             if (raffleEnded)
             {
-                Logger.Info("Raffle {0} has ended", raffle);
+                _logger.Information("Raffle {Id} has ended", raffle);
                 
                 total--;
                 _joinedRaffles.Add(raffle);
@@ -224,7 +223,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
                 int max = int.Parse(limitsMatch.Groups["Max"].Value);
                 if (Paranoid && num < 2)
                 {
-                    Logger.Info("Raffle {0} has too few entries (from Paranoid option)", raffle);
+                    _logger.Information("Raffle {Id} has too few entries (from Paranoid option)", raffle);
                     
                     total--;
                     continue;
@@ -232,7 +231,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
 
                 if (num >= max)
                 {
-                    Logger.Info("Raffle {0} is full ({0}/{1})", raffle, num, max);
+                    _logger.Information("Raffle {Id} is full ({Num}/{Max})", raffle, num, max);
                     
                     total--;
                     _joinedRaffles.Add(raffle);
@@ -264,13 +263,13 @@ public class JoinRafflesCommand : AuthenticatedCommand
                 {
                     joined++;
                     
-                    Logger.Success("Joined raffle {0} ({1} of {2})", raffle, joined, total);
+                    _logger.Information("Joined raffle {Id} ({Joined} of {Total})", raffle, joined, total);
                     
                     _joinedRaffles.Add(raffle);
                 }
                 else
                 {
-                    Logger.Error("Unable to join raffle {0}: {1}", raffle, enterRaffleResponse?.Message ?? "Unknown Reason");
+                    _logger.Error("Unable to join raffle {Id}: {Message}", raffle, enterRaffleResponse?.Message ?? "Unknown Reason");
                 }
 
                 await Task.Delay(JoinDelay);
@@ -279,13 +278,13 @@ public class JoinRafflesCommand : AuthenticatedCommand
             {
                 _joinedRaffles.Add(raffle);
                 
-                Logger.Error("Could not obtain hash from raffle {0}", raffle);
+                _logger.Error("Could not obtain hash from raffle {Id}", raffle);
             }
         }
 
         if (joined > 0)
         {
-            Logger.Success("Finished raffle queue");
+            _logger.Information("Finished raffle queue");
         }
     }
 }

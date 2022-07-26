@@ -16,19 +16,23 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/25/2022 @ 23:20
+// Last edited on 07/26/2022 @ 01:21
 #endregion
+
+using Serilog.Events;
 
 namespace RaffleRunner;
 
 public class RootCommand
 {
     [Option("-d|--debug", Description = "Enable debug logging")]
-    public bool Debug { get; set; }
+    public bool Debug { get; private set; }
+    
+    private readonly ILogger _logger = Log.ForContext<AuthenticatedCommand>();
 
     public virtual async Task OnExecuteAsync()
     {
-        Logger.LogDebug = Debug;
+        Program.LogLevelSwitch.MinimumLevel = Debug ? LogEventLevel.Debug : LogEventLevel.Information;
         
         await ExecuteAsync();
     }

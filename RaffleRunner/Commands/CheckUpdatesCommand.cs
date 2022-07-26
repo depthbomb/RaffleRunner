@@ -16,7 +16,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 19:46
-// Last edited on 07/25/2022 @ 23:44
+// Last edited on 07/26/2022 @ 01:59
 #endregion
 
 using System.Text.Json;
@@ -32,6 +32,7 @@ public class CheckUpdatesCommand : RootCommand
     
     private const string Url = "https://api.github.com/repos/depthbomb/RaffleRunner/releases/latest";
 
+    private readonly ILogger    _logger = Log.ForContext<CheckUpdatesCommand>();
     private readonly HttpClient _http;
 
     public CheckUpdatesCommand()
@@ -46,7 +47,7 @@ public class CheckUpdatesCommand : RootCommand
         {
             await AnsiConsole.Status().StartAsync("Checking for updates", async _ =>
             {
-                var currentVersion = GetAssemblyVersion();
+                var currentVersion = GlobalShared.Version;
                 var json           = await _http.GetStreamAsync(Url);
                 var release        = await JsonSerializer.DeserializeAsync<LatestRelease>(json);
                 if (release != null)
@@ -55,7 +56,7 @@ public class CheckUpdatesCommand : RootCommand
                     if (currentVersion.CompareTo(remoteVersion) < 0)
                     {
                         AnsiConsole.MarkupLineInterpolated($"RaffleRunner version [bold black on #06b6d4]{remoteVersion}[/] is available to download.\n");
-                        
+
                         foreach (string bodyLine in release.Body.Split("\n"))
                         {
                             Console.WriteLine(bodyLine);
@@ -75,15 +76,7 @@ public class CheckUpdatesCommand : RootCommand
         }
         catch (Exception ex)
         {
-            Logger.Error("Unable to check for updates: {0}", ex);
+            _logger.Error(ex, "Unable to check for updates");
         }
-    }
-    
-    private Version GetAssemblyVersion()
-    {
-        var assembly        = System.Reflection.Assembly.GetExecutingAssembly();
-        var fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
-
-        return new Version(fileVersionInfo.FileVersion!);
     }
 }

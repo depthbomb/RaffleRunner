@@ -16,7 +16,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/25/2022 @ 19:11
+// Last edited on 07/26/2022 @ 01:52
 #endregion
 
 using System.Reflection;
@@ -26,10 +26,10 @@ namespace RaffleRunner;
 [PublicAPI]
 internal static class GlobalShared
 {
-    internal static string MimicUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36";
+    internal static Version      Version          = new("0.2.0.0");
+    internal static string       MimicUserAgent   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36";
     internal static AssemblyName AssemblyName     = Assembly.GetExecutingAssembly().GetName();
     internal static string       FullAssemblyName = AssemblyName.Name!;
     internal static string       ProgramIdentifier => $"{FullAssemblyName} v{Version} ({ModuleVersion})";
-    internal static Version      Version           => AssemblyName.Version ?? throw new InvalidOperationException(nameof(Version));
     internal static Guid         ModuleVersion     => Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId;
 }

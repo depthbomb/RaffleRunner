@@ -16,7 +16,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/25/2022 @ 23:33
+// Last edited on 07/26/2022 @ 01:27
 #endregion
 
 using System.Text.RegularExpressions;
@@ -29,7 +29,8 @@ public class CheckWonCommand : AuthenticatedCommand
     [Option("-o|--open", Description = "Whether to open your default browser to the raffle won page if you've won any raffles.")]
     public bool OpenPage { get; private set; }
     
-    private readonly Regex _wonRafflesPattern = new(@"You've won (?<Amount>\d) raffles? that must be withdrawn");
+    private readonly ILogger _logger            = Log.ForContext<CheckWonCommand>();
+    private readonly Regex   _wonRafflesPattern = new(@"You've won (?<Amount>\d) raffles? that must be withdrawn");
     
     public override async Task ExecuteAsync()
     {
@@ -48,7 +49,7 @@ public class CheckWonCommand : AuthenticatedCommand
 
         if (OpenPage)
         {
-            Logger.Debug("Opening web page");
+            _logger.Debug("Opening web page");
             
             Utils.OpenUrl("https://scrap.tf/raffles/won");
         }
