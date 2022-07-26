@@ -60,6 +60,5 @@ This software is currently a work-in-progress and is missing features such as:
 
 - Honeypot/trap detection
 - Logging to a file
-- Handling of specific scenarios (such as a banned account)
 
 These are features that will be included in the full release of RaffleRunner.
