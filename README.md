@@ -33,7 +33,7 @@ RaffleRunner is compiled into a self-contained binary that doesn't require anyth
 
 You can simply extract the binary from the archive you download from the [latest release.](https://github.com/depthbomb/RaffleRunner/releases/latest) However, if you wish to execute RaffleRunner in your terminal from any location, you must add it to your system's PATH.
 
-If you are on a non-Windows system then you likely already know how to do this. If you are on Windows, on the other hand, you can follow [this answer.](https://stackoverflow.com/questions/4822400/register-an-exe-so-you-can-run-it-from-any-command-line-in-windows) A full release of RaffleRunner may include an installer that sets this up for you.
+If you are on a non-Windows system then you likely already know how to do this. If you are on Windows, on the other hand, you can follow [this answer.](https://stackoverflow.com/a/41895179/2526063) A full release of RaffleRunner may include an installer that sets this up for you.
 
 ## Compatibility
 
