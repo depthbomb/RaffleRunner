@@ -27,7 +27,11 @@ This is a beta version of the cross-platform CLI application version of my [Scra
 
 ## Requirements
 
-RaffleRunner is compiled into a self-contained binary that doesn't require anything else to be installed.
+RaffleRunner releases provide both self-contained (`-sc`) and framework-dependent (`-fd`) binaries.
+
+The difference between the two is that self-contained binaries do not require the .NET 7 Runtime to be installed to run. However this does mean that self-contained binaries are quite a bit larger (up to **1000%**!) but may boot up _slightly_ faster.
+
+If you choose to use a framework-dependent binary then you may download and install the .NET 7 Runtime from [here.](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 
 ## Installation
 
@@ -42,23 +46,19 @@ RaffleRunner has builds for Windows (x86, x64, arm, arm64) as well as builds Lin
 ## Commands
 
 - `$ rafrun check-won [options]`
-  - `-c | --cookie <value>` - Your Scrap.TF scr_session cookie value
+  - `-c | --cookie <value>` - Your scr_session cookie value, omit to use saved cookie instead (see `save-cookie`)
   - `-o | --open` - Open the won raffles page in your system's default browser
 - `$ rafrun join-raffles [options]`
-  - `-c | --cookie <value>` - Your Scrap.TF scr_session cookie value
+  - `-c | --cookie <value>` - Your scr_session cookie value, omit to use saved cookie instead (see `save-cookie`)
   - `-r | --repeat <number>` - How many times to re-scan and join available raffles, omit to run indefinitely
   - `-e | --ending` - Whether to sort raffles by time remaining, by default they are sorted by when they were created
   - `-i | --increment-scan-delay <number>` - Whether to increment the scan delay by 1 second if a scan resulted in no available raffles
   - `-p | --paranoid` - Enable paranoid mode
+- `$ rafrun save-cookie <cookie>` - Saves your cookie value to the file system so you do not need to supply it each time you use a command that requires it
 - `$ rafrun check-updates` - Check for new releases
 
 All commands also support a `-d | --debug` option which enables debug logging.
 
 ## Beta Disclaimer
 
-This project is currently a work-in-progress and is missing features such as:
-
-- Honeypot/trap detection
-- Logging to a file
-
-These are features that will be included before or at the full release of RaffleRunner.
+This project is currently a work-in-progress so it may be buggy and missing features.

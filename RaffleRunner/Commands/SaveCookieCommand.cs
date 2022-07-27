@@ -15,36 +15,35 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
-// Created on     07/25/2022 @ 18:44
-// Last edited on 07/26/2022 @ 18:57
+// Created on     07/26/2022 @ 17:50
+// Last edited on 07/26/2022 @ 18:48
 #endregion
 
-namespace RaffleRunner;
+using System.IO;
+using RaffleRunner.Attributes;
 
-public class RootCommand
+namespace RaffleRunner.Commands;
+
+[Command("save-cookie", Description = "Saves your cookie value to the file system")]
+public class SaveCookieCommand : RootCommand
 {
-    [Option("-d|--debug", Description = "Enable debug logging")]
-    public bool Debug { get; private set; }
+    [Cookie]
+    [Required]
+    [Argument(0, Description = "Your scr_session cookie value")]
+    public string Cookie { get; set; }
     
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-    public virtual async Task OnExecuteAsync()
+    public override async Task ExecuteAsync()
     {
-        if (Debug)
+        try
         {
-            foreach (var rule in LogManager.Configuration.LoggingRules)
-            {
-                rule.SetLoggingLevels(LogLevel.Trace, LogLevel.Fatal);
-            }
-            
-            LogManager.ReconfigExistingLoggers();
+            await File.WriteAllTextAsync(GlobalShared.CookieFilePath, Cookie);
+            _logger.Info("Saved cookie");
         }
-        
-        await ExecuteAsync();
-    }
-    
-    public virtual Task ExecuteAsync()
-    {
-        return Task.CompletedTask;
+        catch (Exception ex)
+        {
+            _logger.Fatal(ex, "Failed to save cookie");
+        }
     }
 }

@@ -12,6 +12,20 @@
         <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-musl-x64" />
         <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm" />
         <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm64" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-x86-fd" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-x86-sc" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-x64-sc" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-x64-fd" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-arm-sc" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-arm-fd" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-arm64-sc" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/win-arm64-fd" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-x64-sc" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-x64-fd" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm-sc" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm-fd" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm64-sc" />
+        <option value="$PROJECT_DIR$/RaffleRunner/bin/Publish/linux-arm64-fd" />
       </list>
     </option>
   </component>

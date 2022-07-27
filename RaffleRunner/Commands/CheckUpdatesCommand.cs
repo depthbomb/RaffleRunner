@@ -32,7 +32,7 @@ public class CheckUpdatesCommand : RootCommand
     
     private const string Url = "https://api.github.com/repos/depthbomb/RaffleRunner/releases/latest";
 
-    private readonly ILogger    _logger = Log.ForContext<CheckUpdatesCommand>();
+    private readonly Logger     _logger = LogManager.GetCurrentClassLogger();
     private readonly HttpClient _http;
 
     public CheckUpdatesCommand()

@@ -16,7 +16,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/26/2022 @ 01:27
+// Last edited on 07/26/2022 @ 19:18
 #endregion
 
 using System.Text.Json;
@@ -51,7 +51,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
     private const string RafflesPaginateEndpoint = "/ajax/raffles/Paginate";
     private const string RafflePanelSelector     = ".panel-raffle:not(.raffle-entered)";
     
-    private readonly ILogger      _logger        = Log.ForContext<JoinRafflesCommand>();
+    private readonly Logger       _logger        = LogManager.GetCurrentClassLogger();
     private readonly List<string> _queue         = new();
     private readonly List<string> _joinedRaffles = new();
     private readonly Regex        _entryPattern  = new(@"ScrapTF\.Raffles\.RedirectToRaffle\('(?<RaffleId>[A-Z0-9]{6,})'\)", RegexOptions.Compiled);
@@ -65,14 +65,12 @@ public class JoinRafflesCommand : AuthenticatedCommand
         bool repeatForever = RepeatAmount < 1;
         for (int i = 0; repeatForever || i < RepeatAmount; i++)
         {
-            _logger.Information("Scanning raffles");
+            _logger.Info("Scanning raffles");
             
             await ScanRafflesAsync();
             
             if (_queue.Count > 0)
             {
-                _logger.Information("Joining {Count} {Pluralization}", _queue.Count, _queue.Count != 1 ? "raffles" : "raffle");
-                
                 await JoinRafflesAsync();
             }
             else
@@ -196,7 +194,10 @@ public class JoinRafflesCommand : AuthenticatedCommand
     {
         int joined = 0;
         int total  = _queue.Count;
-        var queue  = _queue.Where(r => !_joinedRaffles.Contains(r));
+        var queue  = _queue.Where(r => !_joinedRaffles.Contains(r)).ToList();
+        
+        _logger.Info("Joining {Count} {Pluralization:l}", queue.Count, queue.Count != 1 ? "raffles" : "raffle");
+        
         foreach (string raffle in queue)
         {
             _logger.Debug("Joining raffle {Id}", raffle);
@@ -210,7 +211,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
 
             if (raffleEnded)
             {
-                _logger.Information("Raffle {Id} has ended", raffle);
+                _logger.Info("Raffle {Id} has ended", raffle);
                 
                 total--;
                 _joinedRaffles.Add(raffle);
@@ -223,7 +224,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
                 int max = int.Parse(limitsMatch.Groups["Max"].Value);
                 if (Paranoid && num < 2)
                 {
-                    _logger.Information("Raffle {Id} has too few entries (from Paranoid option)", raffle);
+                    _logger.Info("Raffle {Id} has too few entries (from Paranoid option)", raffle);
                     
                     total--;
                     continue;
@@ -231,7 +232,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
 
                 if (num >= max)
                 {
-                    _logger.Information("Raffle {Id} is full ({Num}/{Max})", raffle, num, max);
+                    _logger.Info("Raffle {Id} is full ({Num}/{Max})", raffle, num, max);
                     
                     total--;
                     _joinedRaffles.Add(raffle);
@@ -263,7 +264,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
                 {
                     joined++;
                     
-                    _logger.Information("Joined raffle {Id} ({Joined} of {Total})", raffle, joined, total);
+                    _logger.Info("Joined raffle {Id} ({Joined} of {Total})", raffle, joined, total);
                     
                     _joinedRaffles.Add(raffle);
                 }
@@ -284,7 +285,7 @@ public class JoinRafflesCommand : AuthenticatedCommand
 
         if (joined > 0)
         {
-            _logger.Information("Finished raffle queue");
+            _logger.Info("Finished raffle queue");
         }
     }
 }

@@ -1,0 +1,6 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish Linux Binaries" type="CompoundRunConfigurationType">
+    <toRun name="Publish (linux-arm64-fd)" type="DotNetFolderPublish" />
+    <method v="2" />
+  </configuration>
+</component>

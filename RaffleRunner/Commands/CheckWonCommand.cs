@@ -29,8 +29,8 @@ public class CheckWonCommand : AuthenticatedCommand
     [Option("-o|--open", Description = "Whether to open your default browser to the raffle won page if you've won any raffles.")]
     public bool OpenPage { get; private set; }
     
-    private readonly ILogger _logger            = Log.ForContext<CheckWonCommand>();
-    private readonly Regex   _wonRafflesPattern = new(@"You've won (?<Amount>\d) raffles? that must be withdrawn");
+    private readonly Logger _logger            = LogManager.GetCurrentClassLogger();
+    private readonly Regex  _wonRafflesPattern = new(@"You've won (?<Amount>\d) raffles? that must be withdrawn");
     
     public override async Task ExecuteAsync()
     {

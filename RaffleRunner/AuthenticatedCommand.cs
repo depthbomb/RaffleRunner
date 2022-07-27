@@ -16,13 +16,12 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/26/2022 @ 01:17
+// Last edited on 07/26/2022 @ 19:31
 #endregion
 
-using RaffleRunner.Attributes;
+using System.IO;
 using AngleSharp.Html.Parser;
 using System.Text.RegularExpressions;
-using Serilog.Core;
 
 namespace RaffleRunner;
 
@@ -34,9 +33,7 @@ namespace RaffleRunner;
 public class AuthenticatedCommand : RootCommand
 {
     #region Options
-    [Cookie]
-    [Required]
-    [Option("-c|--cookie", CommandOptionType.SingleValue, Description = "Your scr_session cookie value")]
+    [Option("-c|--cookie", CommandOptionType.SingleValue, Description = "Your scr_session cookie value, omit to use your saved cookie instead")]
     public string Cookie { get; private set; }
     #endregion
 
@@ -56,7 +53,7 @@ public class AuthenticatedCommand : RootCommand
     public HtmlParser HtmlParser => _htmlParser;
     
     private          HttpClient _httpClient;
-    private readonly ILogger    _logger           = Log.ForContext<AuthenticatedCommand>();
+    private readonly Logger     _logger           = LogManager.GetCurrentClassLogger();
     private readonly string     _userAgent        = GlobalShared.MimicUserAgent;
     private readonly HtmlParser _htmlParser       = new();
     private readonly Regex      _csrfTokenPattern = new(@"value=""([a-f\d]{64})""");
@@ -64,6 +61,7 @@ public class AuthenticatedCommand : RootCommand
     public override async Task OnExecuteAsync()
     {
         await Task.WhenAll(
+            GetCookie(),
             CreateHttpClientAsync(),
             GetCsrfTokenAsync(),
             base.OnExecuteAsync()
@@ -81,6 +79,19 @@ public class AuthenticatedCommand : RootCommand
         }
         
         throw new HttpRequestException($"Unable to get string: {res.ReasonPhrase}");
+    }
+
+    private async Task GetCookie()
+    {
+        if (Cookie == null)
+        {
+            if (!File.Exists(GlobalShared.CookieFilePath))
+            {
+                throw new FileNotFoundException("Unable to find cookie file");
+            }
+            
+            Cookie = await File.ReadAllTextAsync(GlobalShared.CookieFilePath);
+        }
     }
 
     private async Task CreateHttpClientAsync()

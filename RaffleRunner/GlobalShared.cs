@@ -16,9 +16,10 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 // 
 // Created on     07/25/2022 @ 18:44
-// Last edited on 07/26/2022 @ 01:52
+// Last edited on 07/26/2022 @ 21:01
 #endregion
 
+using System.IO;
 using System.Reflection;
 
 namespace RaffleRunner;
@@ -26,10 +27,13 @@ namespace RaffleRunner;
 [PublicAPI]
 internal static class GlobalShared
 {
-    internal static Version      Version          = new("0.2.0.0");
+    internal static Version      Version          = new("0.3.0.0");
     internal static string       MimicUserAgent   = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36";
     internal static AssemblyName AssemblyName     = Assembly.GetExecutingAssembly().GetName();
     internal static string       FullAssemblyName = AssemblyName.Name!;
+    internal static string       AppDataPath      = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), FullAssemblyName);
+    internal static string       AppLogsPath      = Path.Combine(AppDataPath, "logs");
+    internal static string       CookieFilePath   = Path.Combine(AppDataPath, "cookie.txt");
     internal static string       ProgramIdentifier => $"{FullAssemblyName} v{Version} ({ModuleVersion})";
     internal static Guid         ModuleVersion     => Assembly.GetExecutingAssembly().ManifestModule.ModuleVersionId;
 }
